@@ -2,7 +2,7 @@ FROM nvidia/cuda:12.0.0-devel-ubuntu20.04
 
 # Variables
 ENV CL_API_URL="https://api.btcpuzzle.info"
-ENV CL_USER_TOKEN="xyz"
+ENV CL_USER_TOKEN=""
 ENV CL_WALLET_ADDRESS = "1EEq7exE91EUCLvC5s6PeecPmUomwA7GMy"
 ENV CL_API_SENDER = ""
 ENV CL_TARGET="1BY8GQbnueYofwSuFAT3USAhGjPrkxDdW9"
@@ -21,3 +21,16 @@ RUN apt-get update \
 WORKDIR /app
 RUN git clone https://github.com/albertodst/VanitySearch.git
 WORKDIR /app/VanitySearch
+# Build for NVIDIA CUDA devices
+RUN make gpu=1 CCAP=${VANITYCCAP} all
+
+WORKDIR /app
+RUN git clone https://github.com/albertodst/vanityPy.git
+
+# Copy entrypoint
+COPY start.sh /app/vanityPy
+RUN chmod +x /app/vanityPy/start.sh
+
+# Run bitcrackrandomiser
+WORKDIR /app/vanityPy
+CMD ["/app/vanityPy/start.sh"]

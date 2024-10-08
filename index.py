@@ -7,12 +7,12 @@ import os
 import re
 
 API_URL = os.environ.get('API_URL', 'https://api.btcpuzzle.info')
-USER_TOKEN = os.environ.get('USER_TOKEN', 'x')
+USER_TOKEN = os.environ.get('USER_TOKEN', '')
 WALLET_ADDRESS = os.environ.get('WALLET_ADDRESS', '1EEq7exE91EUCLvC5s6PeecPmUomwA7GMy')
 API_SENDER = os.environ.get('API_SENDER', '')
 TARGET=os.environ.get('TARGET', '1BY8GQbnueYofwSuFAT3USAhGjPrkxDdW9')
 PREFIX="00000000000000000000000000000000000000000000000"
-PUZZLE_CODE = os.environ.get('PUZZLE_CODE', '')
+PUZZLE_CODE = os.environ.get('PUZZLE_CODE', '67')
 START_WITH = os.environ.get('START_WITH', '64')
 GPU_ID = os.environ.get('GPU_ID', '0')
 
@@ -86,7 +86,7 @@ def main():
             privateKey=addr_hex_dict[TARGET]
             post_key_to_telegram_sender(privateKey)
             print("Key exists in the dictionary.")
-            os.remove("out.txt")
+            os.remove("../VanitySearch/out.txt")
             break
         else:
             combined_hex = PREFIX+PREFIX.join(addr_hex_dict.values())
