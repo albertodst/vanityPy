@@ -86,6 +86,7 @@ def main():
             privateKey=addr_hex_dict[TARGET]
             post_key_to_telegram_sender(privateKey)
             print("Key exists in the dictionary.")
+            os.remove("out.txt")
             break
         else:
             combined_hex = PREFIX+PREFIX.join(addr_hex_dict.values())
