@@ -8,4 +8,4 @@ export TARGET="${CL_TARGET}"
 export PUZZLE_CODE="${CL_PUZZLE_CODE}"
 export GPU_ID="${CL_GPU_ID}"
 
-python3 index.py
+/usr/bin/python3 index.py

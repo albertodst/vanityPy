@@ -15,7 +15,7 @@ ENV VANITYCCAP=2.0
 
 WORKDIR /app
 RUN apt-get update \
- && apt-get install git nano curl -y
+ && apt-get install git nano curl python3 -y
 
 # Clone and build vanitysearch.
 WORKDIR /app
