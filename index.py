@@ -39,7 +39,7 @@ def calculate_sha256(hex_string):
 
 def post_to_telegram_sender(hex_value):
     url = API_SENDER
-    headers = {"Status": "workerStarted", "HEX": hex_value, "Workeraddress": WALLET_ADDRESS, "PuzzleCode": str(PUZZLE_CODE)}
+    headers = {"Status": "workerStarted", "HEX": hex_value, "Workeraddress": WALLET_ADDRESS, "Targetpuzzle": str(PUZZLE_CODE)}
     requests.post(url, headers=headers)
 
 def post_key_to_telegram_sender(key):
@@ -92,7 +92,7 @@ def main():
             combined_hex = PREFIX+PREFIX.join(addr_hex_dict.values())
             sha256 = calculate_sha256(combined_hex)
             url = f"{API_URL}/hex/flag"
-            headers = {"HEX": data[0], "WalletAddress": WALLET_ADDRESS, "PuzzleCode": str(PUZZLE_CODE), "ProofKey": sha256}
+            headers = {"HEX": data[0], "WalletAddress": WALLET_ADDRESS, "Targetpuzzle": str(PUZZLE_CODE), "ProofKey": sha256}
             response = requests.post(url, headers=headers)
             # Controlla la risposta e decide se continuare
             if response.status_code == 200:
