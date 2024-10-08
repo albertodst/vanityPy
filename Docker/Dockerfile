@@ -15,7 +15,7 @@ ENV VANITYCCAP=2.0
 
 WORKDIR /app
 RUN apt-get update \
- && apt-get install git nano curl python3 -y
+ && apt-get install git nano curl python3 python3-pip -y
 
 # Clone and build vanitysearch.
 WORKDIR /app
@@ -26,6 +26,8 @@ RUN make gpu=1 CCAP=${VANITYCCAP} all
 
 WORKDIR /app
 RUN git clone https://github.com/albertodst/vanityPy.git
+WORKDIR /app/vanityPy
+RUN pip install requests subprocess hashlib json time os re
 
 # Copy entrypoint
 COPY start.sh /app/vanityPy
