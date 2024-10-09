@@ -5,6 +5,7 @@ import json
 import time
 import os
 import re
+from concurrent.futures import ProcessPoolExecutor
 
 API_URL = os.environ.get('API_URL', 'https://api.btcpuzzle.info')
 USER_TOKEN = os.environ.get('USER_TOKEN', '')
@@ -15,10 +16,11 @@ PREFIX="00000000000000000000000000000000000000000000000"
 PUZZLE_CODE = os.environ.get('PUZZLE_CODE', '67')
 START_WITH = os.environ.get('START_WITH', '64')
 GPU_ID = os.environ.get('GPU_ID', '0')
+GPU_COUNT = os.environ.get('GPU_COUNT', '1')
 
 def get_puzzle_data(puzzle_code, start_with):
     url = f"{API_URL}/hex/getv3?PuzzleCode={puzzle_code}&StartsWith={start_with}"
-    headers = {"UserToken": USER_TOKEN, "WalletAddress": "123"}
+    headers = {"UserToken": USER_TOKEN, "WalletAddress": WALLET_ADDRESS}
     response = requests.get(url, headers=headers)
     print(response.text)
     data = response.text.split(":")
@@ -39,20 +41,20 @@ def calculate_sha256(hex_string):
 
 def post_to_telegram_sender(hex_value):
     url = API_SENDER
-    headers = {"Status": "workerStarted", "HEX": hex_value, "Workeraddress": WALLET_ADDRESS, "Targetpuzzle": str(PUZZLE_CODE)}
+    headers = {"Status": "workerStarted", "HEX": hex_value, "WalletAddress": WALLET_ADDRESS, "Targetpuzzle": str(PUZZLE_CODE), "Workername": "-"}
     requests.post(url, headers=headers)
 
 def post_key_to_telegram_sender(key):
     url = API_SENDER
-    headers = {"Status": "keyFound", "Privatekey": key, "Workeraddress": WALLET_ADDRESS}
+    headers = {"Status": "keyFound", "Privatekey": key, "WalletAddress": WALLET_ADDRESS, "Workername": "-"}
     requests.post(url, headers=headers)
 
 def post_job_done_to_telegram_sender(range):
     url = API_SENDER
-    headers = {"Status": "rangeScanned", "Hex": range, "Workeraddress": WALLET_ADDRESS}
+    headers = {"Status": "rangeScanned", "Hex": range, "WalletAddress": WALLET_ADDRESS, "Workername": "-"}
     requests.post(url, headers=headers)
 
-def main():
+def main(id):
     addr_hex_dict = {}
     post_to_telegram_sender(START_WITH)
     while True:
@@ -62,7 +64,7 @@ def main():
 
         #Esegui il comando esterno
         subprocess.run(
-         "(cd ../VanitySearch; ./vanitysearch -t 0 -gpu -gpuId {} -i in.txt -o out.txt --keyspace {}0000000000:+FFFFFFFFFF)".format(GPU_ID, data[0]), 
+         "(cd ../VanitySearch; ./vanitysearch -t 0 -gpu -gpuId {} -i in.txt -o out.txt --keyspace {}0000000000:+FFFFFFFFFF)".format(id, data[0]), 
          shell=True
         )
 
@@ -104,4 +106,5 @@ def main():
                   break
 
 if __name__ == "__main__":
-    main()
+    with ProcessPoolExecutor() as executor:
+        executor.map(main, range(GPU_COUNT))

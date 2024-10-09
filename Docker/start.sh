@@ -7,5 +7,6 @@ export API_SENDER="${CL_API_SENDER}"
 export TARGET="${CL_TARGET}"
 export PUZZLE_CODE="${CL_PUZZLE_CODE}"
 export GPU_ID="${CL_GPU_ID}"
+export GPU_COUNT="${CL_GPU_COUNT}"
 
 /usr/bin/python3 index.py
