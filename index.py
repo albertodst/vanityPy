@@ -107,4 +107,4 @@ def main(id):
 
 if __name__ == "__main__":
     with ProcessPoolExecutor() as executor:
-        executor.map(main, range(GPU_COUNT))
+        executor.map(main, range(int(GPU_COUNT)))
