@@ -39,24 +39,27 @@ def execute_command(command):
 def calculate_sha256(hex_string):
     return hashlib.sha256(hex_string.encode('utf-8')).hexdigest()
 
-def post_to_telegram_sender(hex_value):
+def post_to_telegram_sender(hex_value, id):
+    name = "GPU #" + str(id)
     url = API_SENDER
-    headers = {"Status": "workerStarted", "HEX": hex_value, "WalletAddress": WALLET_ADDRESS, "Targetpuzzle": str(PUZZLE_CODE), "Workername": "-"}
+    headers = {"Status": "workerStarted", "HEX": hex_value, "Workeraddress": WALLET_ADDRESS, "Targetpuzzle": str(PUZZLE_CODE), "Workername": name}
     requests.post(url, headers=headers)
 
-def post_key_to_telegram_sender(key):
+def post_key_to_telegram_sender(key, id):
+    name = "GPU #" + str(id)
     url = API_SENDER
-    headers = {"Status": "keyFound", "Privatekey": key, "WalletAddress": WALLET_ADDRESS, "Workername": "-"}
+    headers = {"Status": "keyFound", "Privatekey": key, "Workeraddress": WALLET_ADDRESS, "Workername": name}
     requests.post(url, headers=headers)
 
-def post_job_done_to_telegram_sender(range):
+def post_job_done_to_telegram_sender(range, id):
+    name = "GPU #" + str(id)
     url = API_SENDER
-    headers = {"Status": "rangeScanned", "Hex": range, "WalletAddress": WALLET_ADDRESS, "Workername": "-"}
+    headers = {"Status": "rangeScanned", "Hex": range, "Workeraddress": WALLET_ADDRESS, "Workername": name, "Targetpuzzle": str(PUZZLE_CODE)}
     requests.post(url, headers=headers)
 
 def main(id):
     addr_hex_dict = {}
-    post_to_telegram_sender(START_WITH)
+    post_to_telegram_sender(START_WITH, id)
     while True:
         data = get_puzzle_data(PUZZLE_CODE, START_WITH)
         write_to_file(data, "../VanitySearch/in.txt")
@@ -86,7 +89,7 @@ def main(id):
         # Stampa o salva il risultato come JSON
         if TARGET in addr_hex_dict:
             privateKey=addr_hex_dict[TARGET]
-            post_key_to_telegram_sender(privateKey)
+            post_key_to_telegram_sender(privateKey, id)
             print("Key exists in the dictionary.")
             os.remove("../VanitySearch/out.txt")
             break
@@ -99,7 +102,7 @@ def main(id):
             # Controlla la risposta e decide se continuare
             if response.status_code == 200:
                   # Continua con il prossimo ciclo
-                  post_job_done_to_telegram_sender(data[0])
+                  post_job_done_to_telegram_sender(data[0], id)
                   pass
             else:
                   print("Errore nell'invio del risultato")
